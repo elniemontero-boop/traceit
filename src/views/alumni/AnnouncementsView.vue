@@ -153,4 +153,21 @@ function formatDate(dateStr: string) {
   font-size: 0.92rem;
   line-height: 1.6;
 }
+
+@media (max-width: 520px) {
+  .card-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .date {
+    margin-left: 0;
+    width: 100%;
+  }
+  .announcement-card {
+    padding: 1.1rem;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+}
 </style>

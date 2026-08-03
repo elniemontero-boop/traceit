@@ -22,8 +22,8 @@
       </select>
     </div>
 
-    <!-- Table -->
-    <div class="table-container">
+    <!-- Table View (Desktop & Tablet) -->
+    <div class="table-container desktop-only">
       <table class="data-table">
         <thead>
           <tr>
@@ -57,6 +57,37 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-cards-list mobile-only">
+      <div v-if="filteredList.length === 0" class="empty-card">
+        No alumni registrations found.
+      </div>
+      <div v-for="item in filteredList" :key="'card-' + item.id" class="alumni-card">
+        <div class="card-top">
+          <div class="card-name-group">
+            <h4 class="card-name">{{ item.full_name }}</h4>
+            <span class="card-email">{{ item.email_address }}</span>
+          </div>
+          <span class="status-tag" :class="`status-${item.status}`">
+            {{ item.status }}
+          </span>
+        </div>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Degree</span>
+            <span class="detail-val">{{ item.degree_completed }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Year Graduated</span>
+            <span class="detail-val">{{ item.year_graduated }}</span>
+          </div>
+        </div>
+        <router-link :to="`/admin/review/${item.id}`" class="btn-review-card">
+          Review Submission →
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -153,9 +184,16 @@ const filteredList = computed(() => {
 .table-container {
   background: #ffffff;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #e2ece3;
+}
+
+@media (max-width: 640px) {
+  .controls-bar {
+    flex-direction: column;
+  }
 }
 
 .data-table {
@@ -218,5 +256,97 @@ const filteredList = computed(() => {
   color: #777;
   padding: 2.5rem !important;
   font-style: italic;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .desktop-only {
+    display: none;
+  }
+  .mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.empty-card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  color: #777;
+  border: 1px solid #e2ece3;
+  font-style: italic;
+}
+
+.alumni-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2ece3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.card-name {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+  color: #1b5e20;
+}
+
+.card-email {
+  font-size: 0.82rem;
+  color: #666;
+  word-break: break-all;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.detail-label {
+  color: #666;
+}
+
+.detail-val {
+  font-weight: 600;
+  color: #333;
+  text-align: right;
+}
+
+.btn-review-card {
+  display: block;
+  text-align: center;
+  background-color: #eef7ee;
+  color: #2e7d32;
+  font-weight: 700;
+  padding: 0.65rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
 }
 </style>

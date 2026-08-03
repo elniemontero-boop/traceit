@@ -1,13 +1,14 @@
 <template>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <router-link to="/" class="brand">
+      <router-link to="/" class="brand" @click="$emit('close-mobile')">
         <img src="@/assets/logo.png" alt="RSU Logo" class="brand-logo" />
         <div class="brand-titles">
           <span class="app-title">TraceIt</span>
           <span class="app-subtitle">RSU Alumni Portal</span>
         </div>
       </router-link>
+      <button class="mobile-close-btn" @click="$emit('close-mobile')">✕</button>
     </div>
 
     <div class="user-badge" v-if="authStore.user">
@@ -22,16 +23,16 @@
       <!-- Alumni Nav -->
       <template v-if="!authStore.isAdmin">
         <div class="nav-group-title">MAIN MENU</div>
-        <router-link to="/dashboard" class="nav-item">
+        <router-link to="/dashboard" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">📊</span> Dashboard
         </router-link>
-        <router-link to="/registration-form" class="nav-item">
+        <router-link to="/registration-form" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">📋</span> Tracer Form
         </router-link>
-        <router-link to="/profile" class="nav-item">
+        <router-link to="/profile" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">👤</span> My Profile
         </router-link>
-        <router-link to="/announcements" class="nav-item">
+        <router-link to="/announcements" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">📢</span> Announcements
         </router-link>
       </template>
@@ -39,16 +40,16 @@
       <!-- Admin Nav -->
       <template v-else>
         <div class="nav-group-title">ADMINISTRATION</div>
-        <router-link to="/admin" class="nav-item">
+        <router-link to="/admin" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">📈</span> Admin Overview
         </router-link>
-        <router-link to="/admin/alumni" class="nav-item">
+        <router-link to="/admin/alumni" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">👥</span> Alumni Directory
         </router-link>
-        <router-link to="/admin/reports" class="nav-item">
+        <router-link to="/admin/reports" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">📊</span> Reports & Analytics
         </router-link>
-        <router-link to="/admin/announcements" class="nav-item">
+        <router-link to="/admin/announcements" class="nav-item" @click="$emit('close-mobile')">
           <span class="icon">📢</span> Manage News
         </router-link>
       </template>
@@ -66,6 +67,8 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+
+defineEmits(['close-mobile'])
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -95,11 +98,16 @@ async function handleLogout() {
   position: sticky;
   top: 0;
   box-shadow: 3px 0 10px rgba(0, 0, 0, 0.05);
+  z-index: 90;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-header {
   padding: 1.5rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .brand {
@@ -130,6 +138,16 @@ async function handleLogout() {
 .app-subtitle {
   font-size: 0.72rem;
   color: #a5d6a7;
+}
+
+.mobile-close-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
 }
 
 .user-badge {
@@ -181,6 +199,7 @@ async function handleLogout() {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  overflow-y: auto;
 }
 
 .nav-group-title {
@@ -243,5 +262,35 @@ async function handleLogout() {
 .btn-logout:hover {
   background: rgba(239, 68, 68, 0.8);
   border-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.is-mobile-open {
+    transform: translateX(0);
+  }
+
+  .mobile-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .nav-item {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
 }
 </style>

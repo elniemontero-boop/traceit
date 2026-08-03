@@ -109,4 +109,20 @@ h1 {
   font-weight: 600;
   text-decoration: none;
 }
+
+@media (max-width: 520px) {
+  .card {
+    padding: 2rem 1.25rem;
+  }
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem;
+  }
+}
 </style>

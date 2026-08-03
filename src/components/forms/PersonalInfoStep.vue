@@ -145,9 +145,12 @@ defineProps<{
   accent-color: #2e7d32;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+  .checkbox-field {
+    padding-top: 0.5rem;
   }
 }
 </style>

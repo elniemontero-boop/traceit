@@ -717,11 +717,42 @@ async function handleFullSubmit() {
 }
 
 @media (max-width: 640px) {
+  .auth-page {
+    padding: 1.25rem 0.75rem;
+  }
+  .auth-card {
+    padding: 1.5rem 1.1rem;
+    border-radius: 12px;
+  }
+  .brand {
+    font-size: 1.7rem;
+  }
   .grid {
     grid-template-columns: 1fr;
   }
   .stepper {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .step-item {
+    flex: 0 0 auto;
+    padding: 0.5rem 0.75rem;
+  }
+  .wizard-actions {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+  .btn-prev,
+  .btn-next,
+  .btn-submit {
+    width: 100%;
+    text-align: center;
+    padding: 0.8rem 1rem;
   }
 }
 </style>

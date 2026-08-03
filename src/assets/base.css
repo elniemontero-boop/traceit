@@ -16,3 +16,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Prevent auto-zooming on mobile iOS safari for form inputs */
+@media (max-width: 768px) {
+  input, select, textarea, button {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch-friendly interactive elements */
+button, input[type="submit"], input[type="button"], a.btn-primary, a.btn-secondary {
+  touch-action: manipulation;
+}
+
+/* Responsive images */
+img, svg {
+  max-width: 100%;
+  height: auto;
+}
+

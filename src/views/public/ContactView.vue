@@ -201,4 +201,25 @@ function handleSubmit() {
 .btn-primary:hover {
   background-color: #1b5e20;
 }
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 2.5rem 1rem;
+  }
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  .content-section {
+    padding: 2rem 1.1rem;
+    gap: 2rem;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .btn-primary {
+    width: 100%;
+    padding: 0.85rem;
+  }
+}
 </style>

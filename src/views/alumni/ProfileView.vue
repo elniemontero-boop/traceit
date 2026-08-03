@@ -527,9 +527,20 @@ legend {
   cursor: not-allowed;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
+  .profile-header {
+    flex-wrap: wrap;
+  }
+  .profile-form fieldset {
+    padding: 1rem;
+  }
   .grid {
     grid-template-columns: 1fr;
+  }
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem;
   }
 }
 </style>

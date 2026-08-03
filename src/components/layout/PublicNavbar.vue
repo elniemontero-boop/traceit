@@ -6,34 +6,47 @@
         <span class="brand-text">TraceIt</span>
       </router-link>
 
-      <nav class="nav-links">
-        <router-link to="/" class="nav-item">Home</router-link>
-        <router-link to="/about" class="nav-item">About</router-link>
-        <router-link to="/contact" class="nav-item">Contact</router-link>
-      </nav>
+      <button
+        class="mobile-toggle"
+        @click="mobileMenuOpen = !mobileMenuOpen"
+        aria-label="Toggle menu"
+      >
+        <span>{{ mobileMenuOpen ? '✕' : '☰' }}</span>
+      </button>
 
-      <div class="nav-auth">
-        <template v-if="authStore.isLoggedIn">
-          <router-link
-            :to="authStore.isAdmin ? '/admin' : '/dashboard'"
-            class="btn-dashboard"
-          >
-            Dashboard
-          </router-link>
-        </template>
-        <template v-else>
-          <router-link to="/login" class="btn-login">Log In</router-link>
-          <router-link to="/register" class="btn-register">Register</router-link>
-        </template>
+      <div class="nav-content" :class="{ 'is-open': mobileMenuOpen }">
+        <nav class="nav-links">
+          <router-link to="/" class="nav-item" @click="mobileMenuOpen = false">Home</router-link>
+          <router-link to="/about" class="nav-item" @click="mobileMenuOpen = false">About</router-link>
+          <router-link to="/contact" class="nav-item" @click="mobileMenuOpen = false">Contact</router-link>
+        </nav>
+
+        <div class="nav-auth">
+          <template v-if="authStore.isLoggedIn">
+            <router-link
+              :to="authStore.isAdmin ? '/admin' : '/dashboard'"
+              class="btn-dashboard"
+              @click="mobileMenuOpen = false"
+            >
+              Dashboard
+            </router-link>
+          </template>
+          <template v-else>
+            <router-link to="/login" class="btn-login" @click="mobileMenuOpen = false">Log In</router-link>
+            <router-link to="/register" class="btn-register" @click="mobileMenuOpen = false">Register</router-link>
+          </template>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const mobileMenuOpen = ref(false)
 </script>
 
 <style scoped>
@@ -53,12 +66,13 @@ const authStore = useAuthStore()
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   text-decoration: none;
   font-weight: 700;
   font-size: 1.35rem;
@@ -69,6 +83,23 @@ const authStore = useAuthStore()
   height: 38px;
   width: auto;
   object-fit: contain;
+}
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #1b5e20;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
 }
 
 .nav-links {
@@ -125,5 +156,62 @@ const authStore = useAuthStore()
 .btn-register:hover,
 .btn-dashboard:hover {
   background-color: #1b5e20;
+}
+
+@media (max-width: 768px) {
+  .mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .nav-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.25rem 1.5rem;
+    gap: 1.25rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid #e2ece3;
+    z-index: 100;
+  }
+
+  .nav-content.is-open {
+    display: flex;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .nav-item {
+    padding: 0.65rem 0.5rem;
+    font-size: 1rem;
+  }
+
+  .nav-auth {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .btn-login,
+  .btn-register,
+  .btn-dashboard {
+    text-align: center;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
 }
 </style>

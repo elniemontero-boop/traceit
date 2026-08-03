@@ -311,4 +311,34 @@ function formatDate(dateStr: string) {
 .btn-delete:hover {
   opacity: 1;
 }
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  .header h1 {
+    font-size: 1.4rem;
+  }
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+    padding: 0.8rem;
+  }
+  .form-card {
+    padding: 1.1rem;
+  }
+  .btn-submit {
+    width: 100%;
+    padding: 0.8rem;
+  }
+  .item-tags {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .announcement-item {
+    padding: 1rem;
+  }
+}
 </style>

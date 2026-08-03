@@ -82,16 +82,17 @@ defineProps<{
 .checkbox-field {
   display: flex;
   align-items: flex-start;
-  gap: 0.7rem;
+  gap: 0.75rem;
   font-size: 0.88rem;
   color: #2e2e2e;
   cursor: pointer;
+  padding: 0.35rem 0;
 }
 
 .checkbox-field input {
-  width: 17px;
-  height: 17px;
-  margin-top: 0.15rem;
+  width: 20px;
+  height: 20px;
+  margin-top: 0.1rem;
   accent-color: #2e7d32;
   flex-shrink: 0;
 }

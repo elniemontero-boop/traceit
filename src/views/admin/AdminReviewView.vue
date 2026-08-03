@@ -367,8 +367,26 @@ function formatLabel(value: string) {
 }
 
 @media (max-width: 560px) {
+  .header-row {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .details-card {
+    padding: 1.1rem;
+  }
   .details-grid {
     grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .decision-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-approve,
+  .btn-decline {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem;
   }
 }
 </style>

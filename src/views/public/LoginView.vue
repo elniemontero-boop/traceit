@@ -306,4 +306,28 @@ async function handleLogin() {
 .switch-auth a:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: 1.5rem 0.85rem;
+  }
+
+  .auth-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 12px;
+  }
+
+  .auth-logo {
+    height: 52px;
+    margin-bottom: 0.5rem;
+  }
+
+  .brand {
+    font-size: 1.6rem;
+  }
+
+  .btn-primary {
+    padding: 0.85rem;
+  }
+}
 </style>

@@ -266,4 +266,26 @@ function formatEmploymentStatus(status: string) {
 .btn-outline:hover {
   background-color: #eef7ee;
 }
+
+@media (max-width: 560px) {
+  .status-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.2rem;
+    gap: 0.6rem;
+  }
+  .summary-card {
+    padding: 1.2rem;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .btn-outline {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 1rem;
+  }
+}
 </style>

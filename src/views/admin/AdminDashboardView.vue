@@ -193,4 +193,20 @@ onMounted(async () => {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 540px) {
+  .header-row h1 {
+    font-size: 1.4rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .stat-card {
+    padding: 1rem;
+  }
+  .action-card {
+    padding: 1.25rem;
+  }
+}
 </style>

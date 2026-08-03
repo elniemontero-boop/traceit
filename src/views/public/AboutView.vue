@@ -134,4 +134,28 @@
 .btn-primary:hover {
   background-color: #1b5e20;
 }
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 2.5rem 1rem;
+  }
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+  .content-section {
+    padding: 2rem 1.1rem;
+    gap: 1.75rem;
+  }
+  .cta-section {
+    padding: 2.2rem 1rem;
+  }
+  .btn-primary {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0.85rem 1rem;
+  }
+}
 </style>

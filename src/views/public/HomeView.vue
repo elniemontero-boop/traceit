@@ -275,14 +275,59 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1.25rem;
+  }
+  .stats-section {
+    padding: 2.25rem 1.25rem;
+  }
+  .features-section {
+    padding: 3rem 1.25rem;
+  }
   .stats-container {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
   }
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
   .hero-title {
     font-size: 2.2rem;
   }
 }
+
+@media (max-width: 520px) {
+  .hero {
+    padding: 3rem 1rem;
+  }
+  .hero-title {
+    font-size: 1.85rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem 1rem;
+  }
+  .hero-brand-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>

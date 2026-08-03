@@ -89,14 +89,15 @@ const employmentStats = computed(() => {
   }
 
   registrations.value.forEach((r) => {
-    if (statusCounts[r.employment_status] !== undefined) {
-      statusCounts[r.employment_status]++
+    const key = r.employment_status
+    if (typeof statusCounts[key] === 'number') {
+      statusCounts[key] = (statusCounts[key] || 0) + 1
     }
   })
 
   const result: Record<string, { count: number; percent: number }> = {}
   Object.keys(statusCounts).forEach((key) => {
-    const count = statusCounts[key]
+    const count = statusCounts[key] ?? 0
     const percent = Math.round((count / totalCount.value) * 100 * 10) / 10
     result[key] = { count, percent }
   })
@@ -267,6 +268,26 @@ function formatStatusLabel(key: string) {
 @media (max-width: 900px) {
   .reports-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .report-card {
+    padding: 1.25rem;
+  }
+  .bar-row {
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+  }
+  .bar-lbl {
+    width: 100%;
+  }
+  .bar-track {
+    flex: 1;
+  }
+  .bar-val {
+    width: auto;
+    font-size: 0.82rem;
   }
 }
 </style>
