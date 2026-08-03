@@ -91,3 +91,26 @@ CREATE POLICY "Public announcements viewable by everyone" ON public.announcement
 CREATE POLICY "Alumni can view own registration" ON public.alumni_registrations FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Alumni can insert own registration" ON public.alumni_registrations FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Alumni can update own pending registration" ON public.alumni_registrations FOR UPDATE USING (auth.uid() = user_id AND status = 'pending');
+
+-- Administrators can review pending applications and mark them approved.
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_profiles
+    WHERE user_id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+CREATE POLICY "Admins can view all alumni registrations"
+ON public.alumni_registrations FOR SELECT
+USING (public.is_admin());
+
+CREATE POLICY "Admins can review alumni registrations"
+ON public.alumni_registrations FOR UPDATE
+USING (public.is_admin())
+WITH CHECK (public.is_admin());

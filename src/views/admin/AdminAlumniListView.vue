@@ -2,8 +2,10 @@
   <div class="alumni-list-page">
     <div class="header">
       <h1>Alumni Directory</h1>
-      <p>Search, filter, and review submitted alumni tracer registrations.</p>
+      <p>Approved alumni are shown by default. Select Pending to review new applications.</p>
     </div>
+
+    <p v-if="loadError" class="error-message">{{ loadError }}</p>
 
     <!-- Filter Controls -->
     <div class="controls-bar">
@@ -15,7 +17,7 @@
       />
 
       <select v-model="statusFilter" class="filter-select">
-        <option value="">All Statuses</option>
+        <option value="">All registrations</option>
         <option value="pending">Pending</option>
         <option value="approved">Approved</option>
         <option value="declined">Declined</option>
@@ -106,21 +108,24 @@ interface Registrant {
 }
 
 const searchQuery = ref('')
-const statusFilter = ref('')
+const statusFilter = ref('approved')
 const registrations = ref<Registrant[]>([])
+const loadError = ref('')
 
 onMounted(async () => {
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('alumni_registrations')
       .select('id, full_name, email_address, degree_completed, year_graduated, status')
       .order('created_at', { ascending: false })
-      
+
+    if (error) throw error
     if (data) {
       registrations.value = data as Registrant[]
     }
-  } catch {
+  } catch (error) {
     registrations.value = []
+    loadError.value = `Could not load registrations: ${error instanceof Error ? error.message : 'Unknown database error.'}`
   }
 })
 
@@ -155,6 +160,16 @@ const filteredList = computed(() => {
 .header p {
   margin: 0;
   color: #666;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  background: #ffebee;
+  color: #c62828;
   font-size: 0.9rem;
 }
 

@@ -7,6 +7,8 @@
       </div>
     </div>
 
+    <p v-if="loadError" class="error-message">{{ loadError }}</p>
+
     <!-- Stat Cards Grid -->
     <div class="stats-grid">
       <div class="stat-card">
@@ -68,10 +70,12 @@ const stats = ref({
   declined: 0,
   employmentRate: 0,
 })
+const loadError = ref('')
 
 onMounted(async () => {
   try {
-    const { data } = await supabase.from('alumni_registrations').select('status, employment_status')
+    const { data, error } = await supabase.from('alumni_registrations').select('status, employment_status')
+    if (error) throw error
     if (data && data.length > 0) {
       stats.value.total = data.length
       stats.value.pending = data.filter((r) => r.status === 'pending').length
@@ -80,8 +84,8 @@ onMounted(async () => {
       const employed = data.filter((r) => ['employed_full_time', 'employed_part_time', 'self_employed'].includes(r.employment_status)).length
       stats.value.employmentRate = Math.round((employed / data.length) * 100 * 10) / 10
     }
-  } catch {
-    // defaults to 0
+  } catch (error) {
+    loadError.value = `Could not load dashboard data: ${error instanceof Error ? error.message : 'Unknown database error.'}`
   }
 })
 </script>
@@ -102,6 +106,16 @@ onMounted(async () => {
 .subtitle {
   margin: 0;
   color: #666;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  background: #ffebee;
+  color: #c62828;
   font-size: 0.9rem;
 }
 

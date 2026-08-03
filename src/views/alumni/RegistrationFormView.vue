@@ -125,7 +125,7 @@ const formData = ref({
   email_address: authStore.user?.email || '',
   social_media_link: '',
   home_address: '',
-  campus_id: defaultCampuses[0].id,
+  campus_id: defaultCampuses[0]!.id,
   degree_completed: '',
   year_graduated: 2024 as '' | 2024 | 2025,
   employment_status: '',
@@ -144,7 +144,7 @@ onMounted(async () => {
     if (data && data.length > 0) {
       campuses.value = data
       if (!formData.value.campus_id) {
-        formData.value.campus_id = data[0].id
+        formData.value.campus_id = data[0]!.id
       }
     }
   } catch {

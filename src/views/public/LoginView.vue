@@ -118,6 +118,12 @@ function startCooldown(seconds: number) {
 
 onMounted(() => {
   checkLockout()
+  const approval = route.query.approval
+  if (approval === 'pending') {
+    errorMessage.value = 'Your registration is pending admin approval. You will be able to log in once it is approved.'
+  } else if (approval === 'declined') {
+    errorMessage.value = 'Your registration was not approved. Please contact the Alumni Office for assistance.'
+  }
 })
 
 onUnmounted(() => {
@@ -156,8 +162,19 @@ async function handleLogin() {
   localStorage.removeItem(STORAGE_KEY_ATTEMPTS)
 
   await authStore.fetchRole()
+  await authStore.fetchApprovalStatus()
 
-  const redirect = (route.query.redirect as string) || '/'
+  if (authStore.isAlumni && authStore.approvalStatus !== 'approved') {
+    const status = authStore.approvalStatus
+    await authStore.signOut()
+    errorMessage.value = status === 'declined'
+      ? 'Your registration was not approved. Please contact the Alumni Office for assistance.'
+      : 'Your registration is pending admin approval. You will be able to log in once it is approved.'
+    loading.value = false
+    return
+  }
+
+  const redirect = (route.query.redirect as string) || (authStore.isAdmin ? '/admin' : '/dashboard')
   router.push(redirect)
 }
 </script>

@@ -150,6 +150,12 @@ router.beforeEach(async (to) => {
     return { name: 'alumni-dashboard' }
   }
 
+  if (to.meta.requiresAuth && authStore.isAlumni && !authStore.isApprovedAlumni) {
+    const approval = authStore.approvalStatus || 'pending'
+    await authStore.signOut()
+    return { name: 'login', query: { approval } }
+  }
+
   if (to.meta.title) {
     document.title = String(to.meta.title)
   }

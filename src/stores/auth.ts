@@ -14,16 +14,19 @@ export interface AuthUser {
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<AuthUser | null>(null)
   const role = ref<'admin' | 'alumni' | null>(null)
+  const approvalStatus = ref<'pending' | 'approved' | 'declined' | null>(null)
   const loading = ref(true)
   const initialized = ref(false)
 
   const isLoggedIn = computed(() => !!user.value)
   const isAdmin = computed(() => role.value === 'admin')
   const isAlumni = computed(() => role.value === 'alumni')
+  const isApprovedAlumni = computed(() => isAlumni.value && approvalStatus.value === 'approved')
 
   async function fetchRole() {
     if (!user.value) {
       role.value = null
+      approvalStatus.value = null
       return
     }
 
@@ -58,6 +61,22 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function fetchApprovalStatus() {
+    if (!user.value || role.value !== 'alumni') {
+      approvalStatus.value = null
+      return null
+    }
+
+    const { data, error } = await supabase
+      .from('alumni_registrations')
+      .select('status')
+      .eq('user_id', user.value.id)
+      .maybeSingle()
+
+    approvalStatus.value = !error && data ? data.status : null
+    return approvalStatus.value
+  }
+
   async function init() {
     if (initialized.value) return
     loading.value = true
@@ -72,6 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
           user_metadata: u.user_metadata as any,
         }
         await fetchRole()
+        await fetchApprovalStatus()
       } else {
         // Check for local storage mock user for offline dev testing
         const storedMock = localStorage.getItem('traceit_mock_user')
@@ -79,6 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
           const parsed = JSON.parse(storedMock)
           user.value = parsed.user
           role.value = parsed.role
+          approvalStatus.value = parsed.approvalStatus || (parsed.role === 'alumni' ? 'approved' : null)
         }
       }
     } catch (e) {
@@ -97,11 +118,13 @@ export const useAuthStore = defineStore('auth', () => {
           user_metadata: u.user_metadata as any,
         }
         await fetchRole()
+        await fetchApprovalStatus()
       } else {
         const storedMock = localStorage.getItem('traceit_mock_user')
         if (!storedMock) {
           user.value = null
           role.value = null
+          approvalStatus.value = null
         }
       }
     })
@@ -121,10 +144,11 @@ export const useAuthStore = defineStore('auth', () => {
       },
     }
     role.value = selectedRole
+    approvalStatus.value = selectedRole === 'alumni' ? 'approved' : null
 
     localStorage.setItem(
       'traceit_mock_user',
-      JSON.stringify({ user: user.value, role: selectedRole })
+      JSON.stringify({ user: user.value, role: selectedRole, approvalStatus: approvalStatus.value })
     )
   }
 
@@ -137,6 +161,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('traceit_mock_user')
     user.value = null
     role.value = null
+    approvalStatus.value = null
   }
 
   return {
@@ -147,8 +172,11 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     isAdmin,
     isAlumni,
+    isApprovedAlumni,
+    approvalStatus,
     init,
     fetchRole,
+    fetchApprovalStatus,
     setMockUser,
     signOut,
   }

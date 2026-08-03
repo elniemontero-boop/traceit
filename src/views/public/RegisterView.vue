@@ -257,7 +257,7 @@ const formData = ref({
   home_address: '',
 
   // Education
-  campus_id: defaultCampuses[0].id,
+  campus_id: defaultCampuses[0]!.id,
   degree_completed: '',
   year_graduated: 2024 as '' | 2024 | 2025,
 
@@ -280,7 +280,7 @@ onMounted(async () => {
     if (data && data.length > 0) {
       campuses.value = data
       if (!formData.value.campus_id) {
-        formData.value.campus_id = data[0].id
+        formData.value.campus_id = data[0]!.id
       }
     }
   } catch {
@@ -421,16 +421,25 @@ async function handleFullSubmit() {
       },
     })
 
-    let userId = authData?.user?.id
-
-    if (authError || !userId) {
-      authStore.setMockUser('alumni')
-      authStore.user!.email = formData.value.email
-      authStore.user!.user_metadata = { full_name: formData.value.full_name, role: 'alumni' }
-      userId = authStore.user!.id
-    } else {
-      await authStore.fetchRole()
+    if (authError) {
+      if (authError.message.toLowerCase().includes('already registered')) {
+        throw new Error('This email already has an account or pending registration. Please use a different email or contact the Alumni Office.')
+      }
+      throw new Error(`Unable to create your account: ${authError.message}`)
     }
+
+    const userId = authData.user?.id
+    if (!userId) {
+      throw new Error('Your account could not be created. Please try again.')
+    }
+
+    // An authenticated session is required by Supabase RLS to save the
+    // registration under the newly created user.
+    if (!authData.session) {
+      throw new Error('Your account was created, but email confirmation is enabled in Supabase. Disable Confirm email for this project, then register with a new email.')
+    }
+
+    await authStore.fetchRole()
 
     // 2. Insert into alumni_registrations
     const payload = {
@@ -462,22 +471,18 @@ async function handleFullSubmit() {
       updated_at: new Date().toISOString(),
     }
 
-    try {
-      const { error } = await supabase.from('alumni_registrations').insert([payload])
-      if (error) {
-        console.warn('Supabase registration notice:', error.message)
-      }
-    } catch (e) {
-      console.warn('Local registration fallback:', e)
-    }
+    const { error: registrationError } = await supabase
+      .from('alumni_registrations')
+      .insert([payload])
 
-    // Save in local storage mock state so views can access it
-    localStorage.setItem('traceit_registered_alumni_data', JSON.stringify(payload))
+    if (registrationError) {
+      throw new Error(`Your registration could not be saved: ${registrationError.message}`)
+    }
 
     router.push('/registration-submitted')
   } catch (e) {
     console.error('Registration failed:', e)
-    errorMessage.value = 'Failed to submit registration. Please try again.'
+    errorMessage.value = e instanceof Error ? e.message : 'Failed to submit registration. Please try again.'
   } finally {
     loading.value = false
   }
