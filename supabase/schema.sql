@@ -114,3 +114,11 @@ CREATE POLICY "Admins can review alumni registrations"
 ON public.alumni_registrations FOR UPDATE
 USING (public.is_admin())
 WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admins can create announcements"
+ON public.announcements FOR INSERT
+WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admins can delete announcements"
+ON public.announcements FOR DELETE
+USING (public.is_admin());

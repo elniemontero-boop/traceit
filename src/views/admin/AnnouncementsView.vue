@@ -43,6 +43,7 @@
           {{ submitting ? 'Publishing…' : 'Publish Announcement' }}
         </button>
       </form>
+      <p v-if="formError" class="form-error" role="alert">{{ formError }}</p>
     </div>
 
     <!-- List -->
@@ -80,6 +81,7 @@ const newTitle = ref('')
 const newCategory = ref('General')
 const newContent = ref('')
 const newPinned = ref(false)
+const formError = ref('')
 
 const announcements = ref<Announcement[]>([])
 
@@ -95,6 +97,7 @@ onMounted(async () => {
 })
 
 async function handleCreate() {
+  formError.value = ''
   submitting.value = true
   const item: Omit<Announcement, 'id'> = {
     title: newTitle.value,
@@ -106,18 +109,28 @@ async function handleCreate() {
 
   try {
     const { data, error } = await supabase.from('announcements').insert([item]).select()
-    if (!error && data && data.length > 0) {
-      announcements.value.unshift(data[0] as Announcement)
-    } else {
-      announcements.value.unshift({ ...item, id: String(Date.now()) })
+    if (error || !data?.length) {
+      throw error ?? new Error('Announcement could not be saved.')
     }
-  } catch {
-    announcements.value.unshift({ ...item, id: String(Date.now()) })
-  } finally {
+
+    announcements.value.unshift(data[0] as Announcement)
     newTitle.value = ''
     newContent.value = ''
     newPinned.value = false
     showForm.value = false
+  } catch (error) {
+    const code = typeof error === 'object' && error !== null && 'code' in error
+      ? String(error.code)
+      : ''
+    const message = typeof error === 'object' && error !== null && 'message' in error
+      ? String(error.message)
+      : ''
+    formError.value = code === '42501'
+      ? 'Your account is not an administrator in Supabase, so the announcement was not saved. Promote this account in user_profiles, then sign out and sign in again.'
+      : message || (error instanceof Error
+        ? error.message
+        : 'Unable to publish the announcement. Please try again.')
+  } finally {
     submitting.value = false
   }
 }
@@ -237,6 +250,12 @@ function formatDate(dateStr: string) {
   font-weight: 700;
   cursor: pointer;
   align-self: flex-start;
+}
+
+.form-error {
+  margin: 0;
+  color: #b3261e;
+  font-size: 0.88rem;
 }
 
 .announcements-list {

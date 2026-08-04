@@ -2,7 +2,8 @@
   <div class="dashboard">
     <div v-if="loading" class="loading-text">Loading your dashboard…</div>
 
-    <template v-else-if="registration">
+    <template v-else>
+      <template v-if="registration">
       <div class="status-card" :class="statusClass">
         <span class="status-icon">{{ statusIcon }}</span>
         <div class="status-text">
@@ -33,6 +34,27 @@
         </div>
         <router-link to="/profile" class="btn-outline">View Full Profile</router-link>
       </div>
+      </template>
+
+      <section v-if="announcements.length" class="announcements-card">
+        <div class="announcements-heading">
+          <div>
+            <h3>Latest Announcements</h3>
+            <p>News and notices from the Alumni Office.</p>
+          </div>
+          <router-link to="/announcements" class="view-all-link">View all</router-link>
+        </div>
+
+        <article v-for="item in announcements" :key="item.id" class="announcement-preview">
+          <div class="announcement-meta">
+            <span>{{ item.category }}</span>
+            <span v-if="item.is_pinned">Pinned</span>
+            <time :datetime="item.created_at">{{ formatDate(item.created_at) }}</time>
+          </div>
+          <h4>{{ item.title }}</h4>
+          <p>{{ item.content }}</p>
+        </article>
+      </section>
     </template>
   </div>
 </template>
@@ -42,13 +64,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
-import type { AlumniRegistration } from '@/types/database'
+import type { AlumniRegistration, Announcement } from '@/types/database'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const loading = ref(true)
 const registration = ref<AlumniRegistration | null>(null)
+const announcements = ref<Announcement[]>([])
 
 onMounted(async () => {
   let regData: any = null
@@ -114,6 +137,20 @@ onMounted(async () => {
   }
 
   registration.value = regData as AlumniRegistration
+  try {
+    const { data, error } = await supabase
+      .from('announcements')
+      .select('*')
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(3)
+
+    if (!error && data) {
+      announcements.value = data as Announcement[]
+    }
+  } catch {
+    announcements.value = []
+  }
   loading.value = false
 })
 
@@ -156,6 +193,14 @@ function formatEmploymentStatus(status: string) {
     .split('_')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ')
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 </script>
 
@@ -265,6 +310,62 @@ function formatEmploymentStatus(status: string) {
 
 .btn-outline:hover {
   background-color: #eef7ee;
+}
+
+.announcements-card {
+  background: #ffffff;
+  border: 1px solid #d7ecd8;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.announcements-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.announcements-heading h3,
+.announcement-preview h4 {
+  margin: 0;
+  color: #1b5e20;
+}
+
+.announcements-heading p,
+.announcement-preview p {
+  margin: 0.35rem 0 0;
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.view-all-link {
+  color: #2e7d32;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.announcement-preview {
+  padding: 1rem 0;
+  border-top: 1px solid #e2ece3;
+}
+
+.announcement-meta {
+  display: flex;
+  gap: 0.55rem;
+  color: #558b2f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.45rem;
+}
+
+.announcement-meta time {
+  color: #777;
+  font-weight: 400;
 }
 
 @media (max-width: 560px) {

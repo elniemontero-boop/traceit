@@ -95,6 +95,55 @@ create table if not exists public.announcements (
   created_at timestamptz not null default now()
 );
 
+-- Upgrade announcement tables created by older versions of the app.
+alter table public.announcements
+  add column if not exists title text,
+  add column if not exists content text,
+  add column if not exists category text not null default 'General',
+  add column if not exists is_pinned boolean not null default false,
+  add column if not exists created_by uuid references auth.users(id),
+  add column if not exists created_at timestamptz not null default now();
+
+-- Preserve messages from an older schema that used `body` instead of `content`.
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'announcements'
+      and column_name = 'body'
+  ) then
+    update public.announcements
+    set content = body
+    where content is null and body is not null;
+
+    alter table public.announcements
+      alter column body drop not null;
+  end if;
+end;
+$$;
+
+-- Preserve compatibility with an older required `posted_by` author column.
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'announcements'
+      and column_name = 'posted_by'
+  ) then
+    update public.announcements
+    set created_by = posted_by
+    where created_by is null and posted_by is not null;
+
+    alter table public.announcements
+      alter column posted_by drop not null;
+  end if;
+end;
+$$;
+
 insert into public.campuses (name, code) values
   ('RSU Main Campus (Odiongan)', 'MAIN'),
   ('RSU Romblon Campus', 'ROMBLON'),
@@ -224,6 +273,8 @@ grant select on public.user_profiles, public.alumni_registrations to authenticat
 grant insert, update on public.alumni_registrations to authenticated;
 grant insert, update, delete on public.announcements to authenticated;
 grant execute on function public.is_admin() to authenticated;
+
+notify pgrst, 'reload schema';
 
 -- IMPORTANT: Replace this email with the email you use for the admin login.
 -- Run this statement after editing it to promote that account.

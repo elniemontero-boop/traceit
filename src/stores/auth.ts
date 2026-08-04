@@ -31,18 +31,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      // First check metadata or user email conventions
-      if (user.value.user_metadata?.role) {
-        role.value = user.value.user_metadata.role
-        return
-      }
-
-      if (user.value.email?.toLowerCase().includes('admin')) {
-        role.value = 'admin'
-        return
-      }
-
-      // Check database user_profiles table
+      // Roles must come from the database. User metadata and email addresses
+      // are client-controlled and must never grant administrator privileges.
       const { data, error } = await supabase
         .from('user_profiles')
         .select('role')
