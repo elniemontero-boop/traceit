@@ -30,6 +30,16 @@
         <span>Person with Disability (PWD)</span>
       </label>
 
+      <label v-if="modelValue.is_pwd" class="field full-width">
+        <span>Specify Disability / PWD Details *</span>
+        <input
+          v-model="modelValue.pwd_details"
+          type="text"
+          required
+          placeholder="Specify disability type or PWD details"
+        />
+      </label>
+
       <label class="field">
         <span>Civil Status *</span>
         <select v-model="modelValue.civil_status" required>
@@ -83,6 +93,7 @@ defineProps<{
     sex_assigned_at_birth: string
     gender: string
     is_pwd: boolean
+    pwd_details?: string
     civil_status: string
     citizenship: string
     birthday: string

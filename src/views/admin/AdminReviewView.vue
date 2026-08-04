@@ -21,7 +21,7 @@
           <div class="detail-item"><span class="label">Maiden Name</span><span>{{ registration.maiden_name || '—' }}</span></div>
           <div class="detail-item"><span class="label">Sex Assigned at Birth</span><span>{{ registration.sex_assigned_at_birth }}</span></div>
           <div class="detail-item"><span class="label">Gender</span><span>{{ registration.gender }}</span></div>
-          <div class="detail-item"><span class="label">PWD</span><span>{{ registration.is_pwd ? 'Yes' : 'No' }}</span></div>
+          <div class="detail-item"><span class="label">PWD</span><span>{{ registration.is_pwd ? (registration.pwd_details ? `Yes (${registration.pwd_details})` : 'Yes') : 'No' }}</span></div>
           <div class="detail-item"><span class="label">Civil Status</span><span>{{ registration.civil_status }}</span></div>
           <div class="detail-item"><span class="label">Citizenship</span><span>{{ registration.citizenship }}</span></div>
           <div class="detail-item"><span class="label">Birthday</span><span>{{ registration.birthday }}</span></div>
@@ -36,6 +36,7 @@
         <h2>Part 2: Education</h2>
         <div class="details-grid">
           <div class="detail-item"><span class="label">Campus</span><span>{{ registration.campuses?.name ?? '—' }}</span></div>
+          <div class="detail-item"><span class="label">Degree Level</span><span>{{ formatDegreeLevel(registration) }}</span></div>
           <div class="detail-item"><span class="label">Degree Completed</span><span>{{ registration.degree_completed }}</span></div>
           <div class="detail-item"><span class="label">Year Graduated</span><span>{{ registration.year_graduated }}</span></div>
         </div>
@@ -110,6 +111,7 @@ interface FullRegistration {
   sex_assigned_at_birth: string
   gender: string
   is_pwd: boolean
+  pwd_details?: string | null
   civil_status: string
   citizenship: string
   birthday: string
@@ -118,6 +120,8 @@ interface FullRegistration {
   social_media_link: string | null
   home_address: string
   degree_completed: string
+  is_bachelors?: boolean
+  is_masters?: boolean
   year_graduated: number
   employment_status: string
   employment_type: string | null
@@ -127,6 +131,13 @@ interface FullRegistration {
   subscribe_notifications: boolean
   status: string
   campuses: { name: string } | null
+}
+
+function formatDegreeLevel(reg: FullRegistration): string {
+  const levels: string[] = []
+  if (reg.is_bachelors) levels.push("Bachelor's")
+  if (reg.is_masters) levels.push("Master's")
+  return levels.length > 0 ? levels.join(', ') : '—'
 }
 
 const loading = ref(true)

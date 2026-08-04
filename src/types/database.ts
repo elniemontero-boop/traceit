@@ -15,6 +15,7 @@ export interface AlumniRegistration {
   sex_assigned_at_birth: string
   gender: string
   is_pwd: boolean
+  pwd_details?: string | null
   civil_status: string
   citizenship: string
   birthday: string
@@ -24,6 +25,8 @@ export interface AlumniRegistration {
   home_address: string
   campus_id: string
   degree_completed: string
+  is_bachelors?: boolean
+  is_masters?: boolean
   year_graduated: number
   employment_status: string
   employment_type: string | null

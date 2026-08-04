@@ -11,13 +11,27 @@
         </select>
       </label>
 
+      <div class="field full-width">
+        <span class="field-label">Degree Level (Select all that apply) *</span>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input v-model="modelValue.is_bachelors" type="checkbox" />
+            <span>Bachelor's Degree</span>
+          </label>
+          <label class="checkbox-label">
+            <input v-model="modelValue.is_masters" type="checkbox" />
+            <span>Master's Degree</span>
+          </label>
+        </div>
+      </div>
+
       <label class="field full-width">
-        <span>Bachelor's Degree Completed *</span>
+        <span>Degree Program Completed *</span>
         <input
           v-model="modelValue.degree_completed"
           type="text"
           required
-          placeholder="e.g. Bachelor of Science in Information Technology"
+          placeholder="e.g. Bachelor of Science in Information Technology / Master of Science in CS"
         />
       </label>
 
@@ -38,6 +52,8 @@ defineProps<{
   modelValue: {
     campus_id: string
     degree_completed: string
+    is_bachelors?: boolean
+    is_masters?: boolean
     year_graduated: '' | 2024 | 2025
     [key: string]: any
   }
@@ -60,7 +76,33 @@ defineProps<{
   color: #2e2e2e;
 }
 
-.field input,
+.field-label {
+  font-weight: 500;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2e2e2e;
+}
+
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2e7d32;
+}
+
+.field input[type="text"],
 .field select {
   padding: 0.6rem 0.75rem;
   border: 1px solid #bcdec0;
@@ -71,7 +113,7 @@ defineProps<{
   transition: border-color 0.15s ease;
 }
 
-.field input:focus,
+.field input[type="text"]:focus,
 .field select:focus {
   border-color: #2e7d32;
 }

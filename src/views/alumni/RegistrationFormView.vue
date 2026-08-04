@@ -118,6 +118,7 @@ const formData = ref({
   sex_assigned_at_birth: '',
   gender: '',
   is_pwd: false,
+  pwd_details: '',
   civil_status: '',
   citizenship: 'Filipino',
   birthday: '',
@@ -127,6 +128,8 @@ const formData = ref({
   home_address: '',
   campus_id: defaultCampuses[0]!.id,
   degree_completed: '',
+  is_bachelors: true,
+  is_masters: false,
   year_graduated: 2024 as '' | 2024 | 2025,
   employment_status: '',
   employment_type: null as string | null,
@@ -170,7 +173,15 @@ function validateCurrentStep(): boolean {
       errorMessage.value = 'Please fill out all required personal information fields before proceeding.'
       return false
     }
+    if (formData.value.is_pwd && !formData.value.pwd_details) {
+      errorMessage.value = 'Please specify your PWD details.'
+      return false
+    }
   } else if (currentStep.value === 2) {
+    if (!formData.value.is_bachelors && !formData.value.is_masters) {
+      errorMessage.value = 'Please specify if your degree is Bachelor\'s or Master\'s.'
+      return false
+    }
     if (!formData.value.campus_id || !formData.value.degree_completed || !formData.value.year_graduated) {
       errorMessage.value = 'Please complete all required education fields (Campus, Degree, Year Graduated).'
       return false
@@ -237,6 +248,7 @@ async function handleSubmit() {
     sex_assigned_at_birth: formData.value.sex_assigned_at_birth,
     gender: formData.value.gender,
     is_pwd: formData.value.is_pwd,
+    pwd_details: formData.value.is_pwd ? formData.value.pwd_details : null,
     civil_status: formData.value.civil_status,
     citizenship: formData.value.citizenship,
     birthday: formData.value.birthday,
@@ -246,6 +258,8 @@ async function handleSubmit() {
     home_address: formData.value.home_address,
     campus_id: formData.value.campus_id,
     degree_completed: formData.value.degree_completed,
+    is_bachelors: formData.value.is_bachelors,
+    is_masters: formData.value.is_masters,
     year_graduated: formData.value.year_graduated || 2024,
     employment_status: formData.value.employment_status,
     employment_type: formData.value.employment_type || null,

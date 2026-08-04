@@ -43,6 +43,10 @@
               <input v-model="form.is_pwd" type="checkbox" />
               <span>Person with Disability (PWD)</span>
             </label>
+            <label v-if="form.is_pwd" class="field full-width">
+              <span>Specify Disability / PWD Details</span>
+              <input v-model="form.pwd_details" type="text" required placeholder="Specify disability type or details" />
+            </label>
             <label class="field">
               <span>Civil Status</span>
               <select v-model="form.civil_status" required>
@@ -89,8 +93,21 @@
                 <option v-for="c in campuses" :key="c.id" :value="c.id">{{ c.name }}</option>
               </select>
             </label>
+            <div class="field full-width">
+              <span class="field-label">Degree Level (Select all that apply)</span>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input v-model="form.is_bachelors" type="checkbox" />
+                  <span>Bachelor's Degree</span>
+                </label>
+                <label class="checkbox-label">
+                  <input v-model="form.is_masters" type="checkbox" />
+                  <span>Master's Degree</span>
+                </label>
+              </div>
+            </div>
             <label class="field full-width">
-              <span>Degree Completed</span>
+              <span>Degree Program Completed</span>
               <input v-model="form.degree_completed" type="text" required />
             </label>
             <label class="field full-width">
@@ -186,6 +203,7 @@ const form = reactive({
   sex_assigned_at_birth: '',
   gender: '',
   is_pwd: false,
+  pwd_details: '',
   civil_status: '',
   citizenship: '',
   birthday: '',
@@ -195,6 +213,8 @@ const form = reactive({
   home_address: '',
   campus_id: '',
   degree_completed: '',
+  is_bachelors: true,
+  is_masters: false,
   year_graduated: 2024 as 2024 | 2025,
   employment_status: '',
   employment_type: '',
@@ -242,6 +262,7 @@ onMounted(async () => {
       sex_assigned_at_birth: 'male',
       gender: 'Male',
       is_pwd: false,
+      pwd_details: null,
       civil_status: 'single',
       citizenship: 'Filipino',
       birthday: '1998-05-15',
@@ -251,6 +272,8 @@ onMounted(async () => {
       home_address: 'Odiongan, Romblon',
       campus_id: '1',
       degree_completed: 'Bachelor of Science in Information Technology',
+      is_bachelors: true,
+      is_masters: false,
       year_graduated: 2024,
       employment_status: 'employed_full_time',
       employment_type: 'private',
@@ -296,6 +319,7 @@ onMounted(async () => {
     sex_assigned_at_birth: regData.sex_assigned_at_birth || 'male',
     gender: regData.gender || 'Male',
     is_pwd: !!regData.is_pwd,
+    pwd_details: regData.pwd_details || '',
     civil_status: regData.civil_status || 'single',
     citizenship: regData.citizenship || 'Filipino',
     birthday: regData.birthday || '1998-05-15',
@@ -305,6 +329,8 @@ onMounted(async () => {
     home_address: regData.home_address || 'Odiongan, Romblon',
     campus_id: regData.campus_id || '1',
     degree_completed: regData.degree_completed || 'Bachelor of Science in Information Technology',
+    is_bachelors: regData.is_bachelors ?? true,
+    is_masters: regData.is_masters ?? false,
     year_graduated: regData.year_graduated || 2024,
     employment_status: regData.employment_status || 'employed_full_time',
     employment_type: regData.employment_type || 'private',
@@ -321,6 +347,17 @@ async function handleSave() {
 
   errorMessage.value = ''
   successMessage.value = ''
+
+  if (form.is_pwd && !form.pwd_details.trim()) {
+    errorMessage.value = 'Please specify your PWD details.'
+    return
+  }
+
+  if (!form.is_bachelors && !form.is_masters) {
+    errorMessage.value = 'Please specify if your degree is Bachelor\'s or Master\'s.'
+    return
+  }
+
   saving.value = true
 
   const updatedPayload = {
@@ -330,6 +367,7 @@ async function handleSave() {
     sex_assigned_at_birth: form.sex_assigned_at_birth,
     gender: form.gender,
     is_pwd: form.is_pwd,
+    pwd_details: form.is_pwd ? form.pwd_details : null,
     civil_status: form.civil_status,
     citizenship: form.citizenship,
     birthday: form.birthday,
@@ -339,6 +377,8 @@ async function handleSave() {
     home_address: form.home_address,
     campus_id: form.campus_id,
     degree_completed: form.degree_completed,
+    is_bachelors: form.is_bachelors,
+    is_masters: form.is_masters,
     year_graduated: form.year_graduated,
     employment_status: form.employment_status,
     employment_type: form.employment_type || null,
@@ -486,6 +526,32 @@ legend {
 }
 
 .checkbox-field input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2e7d32;
+}
+
+.field-label {
+  font-weight: 500;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2e2e2e;
+}
+
+.checkbox-label input {
   width: 16px;
   height: 16px;
   accent-color: #2e7d32;
