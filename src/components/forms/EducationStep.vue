@@ -22,16 +22,31 @@
             <input v-model="modelValue.is_masters" type="checkbox" />
             <span>Master's Degree</span>
           </label>
+          <label class="checkbox-label">
+            <input v-model="modelValue.is_doctorate" type="checkbox" />
+            <span>Doctorate Degree</span>
+          </label>
         </div>
       </div>
 
       <label class="field full-width">
         <span>Degree Program Completed *</span>
+        <select v-model="selectedProgram" @change="onProgramSelect" required>
+          <option value="" disabled>Select degree program…</option>
+          <option v-for="p in DEGREE_PROGRAMS" :key="p.value" :value="p.value">
+            {{ p.value }}
+          </option>
+          <option value="Other">Other / Custom Program…</option>
+        </select>
+      </label>
+
+      <label v-if="isCustomProgram" class="field full-width">
+        <span>Specify Custom Degree Program *</span>
         <input
           v-model="modelValue.degree_completed"
           type="text"
           required
-          placeholder="e.g. Bachelor of Science in Information Technology / Master of Science in CS"
+          placeholder="Enter full degree program name"
         />
       </label>
 
@@ -39,8 +54,10 @@
         <span>Year Graduated *</span>
         <select v-model.number="modelValue.year_graduated" required>
           <option value="" disabled>Select…</option>
+          
           <option :value="2024">2024</option>
           <option :value="2025">2025</option>
+          
         </select>
       </label>
     </div>
@@ -48,17 +65,61 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { ref, watch, onMounted } from 'vue'
+import { DEGREE_PROGRAMS } from '@/constants/programs'
+
+const props = defineProps<{
   modelValue: {
     campus_id: string
     degree_completed: string
     is_bachelors?: boolean
     is_masters?: boolean
-    year_graduated: '' | 2024 | 2025
+    is_doctorate?: boolean
+    year_graduated: '' | number
     [key: string]: any
   }
   campuses: { id: string; name: string }[]
 }>()
+
+const selectedProgram = ref('')
+const isCustomProgram = ref(false)
+
+function syncSelectedProgram() {
+  const current = props.modelValue.degree_completed
+  if (!current) {
+    selectedProgram.value = ''
+    isCustomProgram.value = false
+  } else if (DEGREE_PROGRAMS.some((p) => p.value === current)) {
+    selectedProgram.value = current
+    isCustomProgram.value = false
+  } else {
+    selectedProgram.value = 'Other'
+    isCustomProgram.value = true
+  }
+}
+
+onMounted(() => {
+  syncSelectedProgram()
+})
+
+watch(
+  () => props.modelValue.degree_completed,
+  () => {
+    if (!isCustomProgram.value) {
+      syncSelectedProgram()
+    }
+  }
+)
+
+function onProgramSelect() {
+  if (selectedProgram.value === 'Other') {
+    isCustomProgram.value = true
+    props.modelValue.degree_completed = ''
+  } else {
+    isCustomProgram.value = false
+    props.modelValue.degree_completed = selectedProgram.value
+  }
+}
 </script>
 
 <style scoped>

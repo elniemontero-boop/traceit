@@ -27,6 +27,7 @@ export interface AlumniRegistration {
   degree_completed: string
   is_bachelors?: boolean
   is_masters?: boolean
+  is_doctorate?: boolean
   year_graduated: number
   employment_status: string
   employment_type: string | null

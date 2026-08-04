@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS public.alumni_registrations (
   degree_completed TEXT NOT NULL,
   is_bachelors BOOLEAN DEFAULT FALSE,
   is_masters BOOLEAN DEFAULT FALSE,
+  is_doctorate BOOLEAN DEFAULT FALSE,
   year_graduated INTEGER NOT NULL,
   employment_status TEXT NOT NULL,
   employment_type TEXT,
